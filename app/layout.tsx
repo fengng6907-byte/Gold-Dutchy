@@ -1,21 +1,29 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
 export const metadata: Metadata = {
-  title: 'TapFlow — Turn Every Tap Into a Business Opportunity',
-  description: 'TapFlow is a digital identity and lead generation platform. Share contact info via NFC, capture leads automatically, and track every interaction.',
-  keywords: 'NFC business card, digital business card, lead generation, sales tool',
+  title: 'TapFlow — The Premium NFC Business Platform',
+  description: 'Share contact info instantly via NFC, capture leads automatically, and track every interaction. The smart alternative to Tapt.',
+  keywords: 'NFC business card, digital business card, lead generation, Tapt alternative, premium NFC card',
   openGraph: {
-    title: 'TapFlow — Turn Every Tap Into a Business Opportunity',
-    description: 'Share. Capture. Convert. The smart NFC platform for modern professionals.',
+    title: 'TapFlow — The Premium NFC Business Platform',
+    description: 'Share. Capture. Convert. The intelligent NFC platform for serious professionals.',
     type: 'website',
   },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className="antialiased bg-[#0a0a0a] text-white">{children}</body>
+    <html lang="en" className={inter.variable}>
+      <body className="antialiased bg-[#EFEFEF] text-[#1A1A1A] font-sans">{children}</body>
     </html>
   )
 }

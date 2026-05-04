@@ -7,8 +7,7 @@ import { ArrowRight, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 
 const roles = ['Salesperson', 'Real Estate Agent', 'Founder / Entrepreneur', 'Sales Manager', 'Marketing', 'Other']
 
-const inputClass = `w-full px-4 py-3.5 rounded-xl text-white text-sm placeholder-zinc-600 outline-none transition-all duration-200
-  focus:border-red-600/50 focus:ring-2 focus:ring-red-600/10`
+const inputClass = `w-full px-4 py-3.5 rounded-xl text-charcoal text-sm placeholder-silver-500 outline-none transition-all duration-200 focus:border-red-matte/50 focus:ring-2 focus:ring-red-matte/10`
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -16,7 +15,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full flex items-center justify-center gap-2 py-4 bg-red-600 text-white font-bold rounded-2xl hover:bg-red-500 transition-all duration-200 red-glow disabled:opacity-60 disabled:cursor-not-allowed group"
+      className="w-full flex items-center justify-center gap-2 py-4 btn-red font-bold rounded-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed group"
     >
       {pending ? (
         <>
@@ -26,7 +25,7 @@ function SubmitButton() {
       ) : (
         <>
           Send Message
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" strokeWidth={2} />
         </>
       )}
     </button>
@@ -47,24 +46,24 @@ export default function ContactForm() {
       {/* Name + Email row */}
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Full Name *</label>
+          <label className="block text-xs font-semibold text-silver-700 uppercase tracking-wider mb-2">Full Name *</label>
           <input
             name="name"
             required
             placeholder="Alex Johnson"
             className={inputClass}
-            style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)' }}
+            style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.1)' }}
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Work Email *</label>
+          <label className="block text-xs font-semibold text-silver-700 uppercase tracking-wider mb-2">Work Email *</label>
           <input
             name="email"
             type="email"
             required
             placeholder="alex@company.com"
             className={inputClass}
-            style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)' }}
+            style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.1)' }}
           />
         </div>
       </div>
@@ -72,20 +71,20 @@ export default function ContactForm() {
       {/* Company + Role row */}
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Company</label>
+          <label className="block text-xs font-semibold text-silver-700 uppercase tracking-wider mb-2">Company</label>
           <input
             name="company"
             placeholder="Acme Corp"
             className={inputClass}
-            style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)' }}
+            style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.1)' }}
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Your Role</label>
+          <label className="block text-xs font-semibold text-silver-700 uppercase tracking-wider mb-2">Your Role</label>
           <select
             name="role"
             className={inputClass + ' cursor-pointer'}
-            style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)' }}
+            style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.1)' }}
           >
             <option value="">Select role…</option>
             {roles.map((r) => <option key={r} value={r}>{r}</option>)}
@@ -95,14 +94,14 @@ export default function ContactForm() {
 
       {/* Message */}
       <div>
-        <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Message *</label>
+        <label className="block text-xs font-semibold text-silver-700 uppercase tracking-wider mb-2">Message *</label>
         <textarea
           name="message"
           required
           rows={5}
           placeholder="Tell us about your team, use case, or what you'd like to know…"
           className={inputClass + ' resize-none'}
-          style={{ background: '#161616', border: '1px solid rgba(255,255,255,0.07)' }}
+          style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.1)' }}
         />
       </div>
 
@@ -111,8 +110,8 @@ export default function ContactForm() {
         <div
           className={`flex items-start gap-3 rounded-xl p-4 text-sm ${
             state.success
-              ? 'bg-emerald-600/10 border border-emerald-600/25 text-emerald-400'
-              : 'bg-red-600/10 border border-red-600/25 text-red-400'
+              ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+              : 'bg-red-50 border border-red-200 text-red-700'
           }`}
         >
           {state.success
@@ -126,9 +125,9 @@ export default function ContactForm() {
       {/* Submit */}
       <SubmitButton />
 
-      <p className="text-xs text-center text-zinc-700">
+      <p className="text-xs text-center text-silver-700">
         We respond within 24 hours · Or email us at{' '}
-        <a href="mailto:fengng6907@gmail.com" className="text-zinc-500 hover:text-red-500 transition-colors">
+        <a href="mailto:fengng6907@gmail.com" className="text-charcoal-light hover:text-red-matte transition-colors">
           fengng6907@gmail.com
         </a>
       </p>

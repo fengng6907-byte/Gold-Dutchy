@@ -12,7 +12,7 @@ import Footer from '@/components/Footer'
 
 export default function Home() {
   return (
-    <main className="overflow-x-hidden bg-[#0a0a0a]">
+    <main className="overflow-x-hidden bg-silver-lightest">
       <Nav />
       <Hero />
       <ProductShowcase />

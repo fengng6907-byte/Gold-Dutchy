@@ -41,20 +41,20 @@ export default function Pricing() {
   const [annual, setAnnual] = useState(false)
 
   return (
-    <section className="py-16 bg-[#0a0a0a]">
+    <section className="py-16 bg-silver-lightest">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
         {/* Toggle */}
         <div className="flex justify-center mb-12">
-          <div className="inline-flex p-1 rounded-full gap-1" style={{ background: '#111', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="inline-flex p-1 rounded-full gap-1 raised" style={{ background: 'rgba(255,255,255,0.8)' }}>
             <button onClick={() => setAnnual(false)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${!annual ? 'bg-white text-black shadow-md' : 'text-zinc-500 hover:text-zinc-300'}`}>
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${!annual ? 'bg-charcoal text-white shadow-md' : 'text-charcoal-light hover:text-charcoal'}`}>
               Monthly
             </button>
             <button onClick={() => setAnnual(true)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${annual ? 'bg-white text-black shadow-md' : 'text-zinc-500 hover:text-zinc-300'}`}>
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${annual ? 'bg-charcoal text-white shadow-md' : 'text-charcoal-light hover:text-charcoal'}`}>
               Annual
-              <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">Save 20%</span>
+              <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Save 20%</span>
             </button>
           </div>
         </div>
@@ -65,50 +65,49 @@ export default function Pricing() {
             <div
               key={plan.name}
               className={`relative rounded-3xl p-8 transition-all duration-200 ${
-                plan.highlighted
-                  ? 'scale-105 shadow-2xl'
-                  : 'hover:border-red-600/20'
-              }`}
+                plan.highlighted ? 'scale-105' : ''
+              } raised`}
               style={{
-                background: plan.highlighted ? '#161616' : '#111',
-                border: plan.highlighted ? '1px solid rgba(220,38,38,0.25)' : '1px solid rgba(255,255,255,0.06)',
-                boxShadow: plan.highlighted ? '0 0 60px rgba(220,38,38,0.1)' : undefined,
+                background: plan.highlighted
+                  ? 'linear-gradient(145deg, #1A1A1A, #2A2A2A)'
+                  : 'linear-gradient(145deg, #F5F5F5 0%, #EBEBEB 100%)',
+                border: plan.highlighted ? '1px solid rgba(185,28,28,0.4)' : undefined,
+                boxShadow: plan.highlighted ? '0 20px 60px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.08) inset' : undefined,
               }}
             >
               {plan.badge && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <div className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-full shadow-lg red-glow-sm">
-                    {plan.highlighted && <Zap className="w-3 h-3" />}
+                  <div className="flex items-center gap-1 px-3 py-1 btn-red text-xs font-bold rounded-full shadow-lg">
+                    {plan.highlighted && <Zap className="w-3 h-3" strokeWidth={2} />}
                     {plan.badge}
                   </div>
                 </div>
               )}
 
-              {/* Red top line for highlighted */}
               {plan.highlighted && (
-                <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-red-600/60 to-transparent" />
+                <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-red-matte/60 to-transparent" />
               )}
 
               <div className="mb-6">
-                <div className="text-xs font-bold text-zinc-600 uppercase tracking-widest mb-2">{plan.name}</div>
+                <div className={`text-xs font-bold uppercase tracking-widest mb-2 ${plan.highlighted ? 'text-silver-600' : 'text-silver-700'}`}>{plan.name}</div>
                 <div className="flex items-end gap-1 mb-2">
-                  <div className="text-5xl font-bold text-white">${annual ? plan.price.annual : plan.price.monthly}</div>
-                  {plan.price.monthly > 0 && <div className="text-zinc-600 text-sm mb-2">/month</div>}
+                  <div className={`text-5xl font-black ${plan.highlighted ? 'text-white' : 'text-charcoal'}`}>${annual ? plan.price.annual : plan.price.monthly}</div>
+                  {plan.price.monthly > 0 && <div className={`text-sm mb-2 ${plan.highlighted ? 'text-silver-600' : 'text-silver-700'}`}>/month</div>}
                 </div>
                 {annual && plan.price.monthly > 0 && (
-                  <div className="text-xs text-emerald-500 font-semibold mb-2">
+                  <div className="text-xs text-emerald-600 font-semibold mb-2">
                     Billed ${plan.price.annual * 12}/year · Save ${(plan.price.monthly - plan.price.annual) * 12}/yr
                   </div>
                 )}
-                <p className="text-sm text-zinc-500 leading-relaxed">{plan.desc}</p>
+                <p className={`text-sm leading-relaxed ${plan.highlighted ? 'text-silver-500' : 'text-charcoal-light'}`}>{plan.desc}</p>
               </div>
 
               <Link
                 href="/contact"
                 className={`block w-full text-center py-3 rounded-2xl font-semibold text-sm transition-all duration-200 mb-8 ${
                   plan.highlighted
-                    ? 'bg-red-600 text-white hover:bg-red-500 red-glow-sm'
-                    : 'border border-white/[0.1] text-white hover:border-red-600/40 hover:bg-red-600/[0.05]'
+                    ? 'btn-red'
+                    : 'border border-black/[0.12] text-charcoal hover:border-red-matte/40 hover:bg-red-matte/[0.04] bg-white/60'
                 }`}
               >
                 {plan.cta}
@@ -117,18 +116,18 @@ export default function Pricing() {
               <div className="space-y-2.5">
                 {plan.features.map((f) => (
                   <div key={f} className="flex items-center gap-2.5">
-                    <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${plan.highlighted ? 'bg-red-600' : 'bg-red-600/20 border border-red-600/30'}`}>
-                      <Check className={`w-2.5 h-2.5 stroke-[3] ${plan.highlighted ? 'text-white' : 'text-red-500'}`} />
+                    <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${plan.highlighted ? 'bg-red-matte' : 'bg-charcoal'}`}>
+                      <Check className="w-2.5 h-2.5 text-white stroke-[3]" />
                     </div>
-                    <span className="text-sm text-zinc-400">{f}</span>
+                    <span className={`text-sm ${plan.highlighted ? 'text-silver-400' : 'text-charcoal-light'}`}>{f}</span>
                   </div>
                 ))}
                 {plan.locked.map((f) => (
                   <div key={f} className="flex items-center gap-2.5 opacity-30">
-                    <div className="w-4 h-4 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0">
-                      <div className="w-1.5 h-px bg-zinc-600" />
+                    <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${plan.highlighted ? 'border border-silver-700' : 'border border-silver-400 bg-silver-200'}`}>
+                      <div className="w-1.5 h-px bg-current" />
                     </div>
-                    <span className="text-sm text-zinc-600 line-through">{f}</span>
+                    <span className={`text-sm line-through ${plan.highlighted ? 'text-silver-600' : 'text-silver-700'}`}>{f}</span>
                   </div>
                 ))}
               </div>
@@ -137,13 +136,13 @@ export default function Pricing() {
         </div>
 
         {/* Enterprise row */}
-        <div className="mt-6 rounded-2xl p-6 flex flex-col lg:flex-row items-center justify-between gap-5"
-          style={{ background: '#111', border: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="mt-6 rounded-2xl p-6 flex flex-col lg:flex-row items-center justify-between gap-5 raised"
+          style={{ background: 'linear-gradient(145deg, #F5F5F5, #EBEBEB)' }}>
           <div>
-            <div className="font-bold text-white mb-1">Enterprise</div>
-            <p className="text-sm text-zinc-500">Custom NFC programs, white-label, volume pricing, SLAs, and dedicated support.</p>
+            <div className="font-bold text-charcoal mb-1">Enterprise</div>
+            <p className="text-sm text-charcoal-light">Custom NFC programs, white-label, volume pricing, SLAs, and dedicated support.</p>
           </div>
-          <Link href="/contact" className="flex-shrink-0 px-5 py-2.5 border border-white/[0.1] text-white text-sm font-semibold rounded-xl hover:border-red-600/40 hover:bg-red-600/[0.05] transition-all">
+          <Link href="/contact" className="flex-shrink-0 px-5 py-2.5 border border-black/[0.12] text-charcoal text-sm font-semibold rounded-xl hover:border-red-matte/40 hover:bg-red-matte/[0.05] transition-all bg-white/60">
             Talk to Sales
           </Link>
         </div>

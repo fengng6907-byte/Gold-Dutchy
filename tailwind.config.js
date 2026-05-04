@@ -8,37 +8,51 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        sans: ['var(--font-inter)', '-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', 'sans-serif'],
       },
       colors: {
-        surface: {
-          DEFAULT: '#111111',
-          subtle: '#0d0d0d',
-          raised: '#161616',
-          border: 'rgba(255,255,255,0.06)',
+        silver: {
+          50:  '#FAFAFA',
+          100: '#F5F5F5',
+          200: '#EFEFEF',
+          300: '#E5E5E5',
+          400: '#D5D5D5',
+          500: '#C0C0C0',
+          600: '#AAAAAA',
+          700: '#8A8A8A',
+          800: '#5A5A5A',
+          900: '#3A3A3A',
         },
-      },
-      backgroundImage: {
-        'noise': "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E\")",
+        charcoal: {
+          DEFAULT: '#1A1A1A',
+          soft:    '#2D2D2D',
+          mid:     '#3A3A3A',
+          light:   '#4A4A4A',
+        },
+        red: {
+          matte:  '#B91C1C',
+          dark:   '#991B1B',
+          bright: '#DC2626',
+        },
       },
       animation: {
-        'fade-up': 'fadeUp 0.6s ease-out forwards',
         'float': 'float 4s ease-in-out infinite',
         'pulse-slow': 'pulse 3s ease-in-out infinite',
-        'glow': 'glow 2s ease-in-out infinite',
+        'fade-up': 'fadeUp 0.6s ease-out forwards',
+        'shimmer': 'shimmer 2.5s linear infinite',
       },
       keyframes: {
+        float: {
+          '0%,100%': { transform: 'translateY(0)' },
+          '50%':     { transform: 'translateY(-8px)' },
+        },
         fadeUp: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '0%':   { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-        glow: {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(220,38,38,0.3)' },
-          '50%': { boxShadow: '0 0 40px rgba(220,38,38,0.6)' },
+        shimmer: {
+          '0%':   { backgroundPosition: '-400px 0' },
+          '100%': { backgroundPosition: '400px 0' },
         },
       },
     },
