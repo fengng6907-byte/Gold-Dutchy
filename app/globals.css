@@ -3,8 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 15, 15, 15;
-  --background-rgb: 255, 255, 255;
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --border: rgba(255, 255, 255, 0.06);
+  --red: #dc2626;
+  --red-light: #ef4444;
 }
 
 * {
@@ -18,36 +21,53 @@ html {
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+  background-color: var(--bg);
+  color: #ffffff;
   font-feature-settings: 'rlig' 1, 'calt' 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-::-webkit-scrollbar-thumb {
-  background: #c7d6fe;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #818cf8;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 2px; }
+
+/* Selection */
+::selection { background: rgba(220, 38, 38, 0.3); color: #fff; }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-violet-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400;
   }
-  .glass {
-    @apply bg-white/80 backdrop-blur-xl border border-white/20;
+  .red-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-red-700;
+  }
+  .glass-nav {
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .glass-card {
+    background: rgba(17, 17, 17, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .matte-card {
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .red-glow {
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.25);
+  }
+  .red-glow-sm {
+    box-shadow: 0 0 16px rgba(220, 38, 38, 0.2);
+  }
+  .text-muted {
+    @apply text-zinc-500;
+  }
+  .text-secondary {
+    @apply text-zinc-400;
   }
 }

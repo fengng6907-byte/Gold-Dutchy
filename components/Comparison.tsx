@@ -1,5 +1,3 @@
-'use client'
-
 import { Check, X, Minus } from 'lucide-react'
 
 const features = [
@@ -18,22 +16,22 @@ const features = [
 function Cell({ value }: { value: boolean | string }) {
   if (value === true) return (
     <div className="flex justify-center">
-      <div className="w-7 h-7 bg-brand-100 rounded-full flex items-center justify-center">
-        <Check className="w-4 h-4 text-brand-600 stroke-[2.5]" />
+      <div className="w-7 h-7 bg-red-600/20 border border-red-600/30 rounded-full flex items-center justify-center">
+        <Check className="w-3.5 h-3.5 text-red-500 stroke-[2.5]" />
       </div>
     </div>
   )
   if (value === false) return (
     <div className="flex justify-center">
-      <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center">
-        <X className="w-4 h-4 text-gray-400" />
+      <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
+        <X className="w-3.5 h-3.5 text-zinc-700" />
       </div>
     </div>
   )
   return (
     <div className="flex justify-center">
-      <div className="w-7 h-7 bg-amber-50 rounded-full flex items-center justify-center">
-        <Minus className="w-4 h-4 text-amber-500" />
+      <div className="w-7 h-7 bg-amber-600/10 border border-amber-600/20 rounded-full flex items-center justify-center">
+        <Minus className="w-3.5 h-3.5 text-amber-600" />
       </div>
     </div>
   )
@@ -41,83 +39,61 @@ function Cell({ value }: { value: boolean | string }) {
 
 export default function Comparison() {
   return (
-    <section className="py-28 bg-gray-50">
+    <section className="py-20 bg-[#0d0d0d]">
       <div className="max-w-4xl mx-auto px-6 lg:px-8">
-        {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-xs font-semibold text-gray-600 mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-xs font-bold text-zinc-500 uppercase tracking-widest mb-5">
             Why TapFlow Wins
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Not All Cards Are Equal
-          </h2>
-          <p className="text-xl text-gray-500">
-            Paper cards are dead. QR codes are halfway there. TapFlow is the complete solution.
-          </p>
+          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4 tracking-tight">Not All Cards Are Equal</h2>
+          <p className="text-zinc-500">Paper cards are dead. QR codes are halfway there. TapFlow is the complete solution.</p>
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-xl">
-          {/* Header row */}
-          <div className="grid grid-cols-4 border-b border-gray-100">
-            <div className="p-5 text-sm font-semibold text-gray-500">Capability</div>
+        <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
+          {/* Header */}
+          <div className="grid grid-cols-4" style={{ background: '#111', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="p-4 text-xs font-bold text-zinc-600 uppercase tracking-wider">Capability</div>
             {[
-              { label: 'Paper Card', sub: 'Old school', bg: 'bg-gray-50', text: 'text-gray-700' },
-              { label: 'QR Code', sub: 'Halfway there', bg: 'bg-amber-50', text: 'text-amber-800' },
-              { label: 'TapFlow', sub: 'Complete solution', bg: 'bg-brand-600', text: 'text-white', highlighted: true },
+              { label: 'Paper Card', sub: 'Old school' },
+              { label: 'QR Code', sub: 'Halfway there' },
+              { label: 'TapFlow', sub: 'Complete', highlight: true },
             ].map((col) => (
-              <div
-                key={col.label}
-                className={`p-5 text-center ${col.bg} ${col.highlighted ? 'relative' : ''}`}
-              >
-                {col.highlighted && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                    Best Choice
-                  </div>
+              <div key={col.label} className={`p-4 text-center relative ${col.highlight ? '' : ''}`}
+                style={col.highlight ? { background: 'rgba(220,38,38,0.08)', borderLeft: '1px solid rgba(220,38,38,0.15)' } : {}}>
+                {col.highlight && (
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-600/60 to-transparent" />
                 )}
-                <div className={`font-bold text-base ${col.text}`}>{col.label}</div>
-                <div className={`text-xs mt-0.5 ${col.highlighted ? 'text-brand-200' : 'text-gray-500'}`}>
-                  {col.sub}
-                </div>
+                <div className={`font-bold text-sm ${col.highlight ? 'text-red-400' : 'text-zinc-500'}`}>{col.label}</div>
+                <div className={`text-xs mt-0.5 ${col.highlight ? 'text-red-600/60' : 'text-zinc-700'}`}>{col.sub}</div>
               </div>
             ))}
           </div>
 
-          {/* Feature rows */}
+          {/* Rows */}
           {features.map((feature, i) => (
             <div
               key={feature.label}
-              className={`grid grid-cols-4 border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${
-                i === features.length - 1 ? 'border-b-0' : ''
-              }`}
+              className="grid grid-cols-4 hover:bg-white/[0.01] transition-colors"
+              style={{ borderBottom: i < features.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
             >
-              <div className="p-4 pl-5 text-sm font-medium text-gray-700 flex items-center">
-                {feature.label}
-              </div>
-              <div className="p-4 flex items-center">
-                <Cell value={feature.paper} />
-              </div>
-              <div className="p-4 flex items-center">
-                <Cell value={feature.qr} />
-              </div>
-              <div className="p-4 flex items-center bg-brand-50/30">
+              <div className="p-4 text-sm text-zinc-500 flex items-center">{feature.label}</div>
+              <div className="p-4 flex items-center"><Cell value={feature.paper} /></div>
+              <div className="p-4 flex items-center"><Cell value={feature.qr} /></div>
+              <div className="p-4 flex items-center" style={{ background: 'rgba(220,38,38,0.04)', borderLeft: '1px solid rgba(220,38,38,0.08)' }}>
                 <Cell value={feature.tapflow} />
               </div>
             </div>
           ))}
         </div>
 
-        {/* Legend */}
-        <div className="flex items-center justify-center gap-6 mt-6 text-sm text-gray-500">
+        <div className="flex items-center justify-center gap-6 mt-5 text-xs text-zinc-700">
           {[
-            { icon: <Check className="w-3 h-3 text-brand-600" />, label: 'Fully supported', bg: 'bg-brand-100' },
-            { icon: <Minus className="w-3 h-3 text-amber-500" />, label: 'Partial support', bg: 'bg-amber-50' },
-            { icon: <X className="w-3 h-3 text-gray-400" />, label: 'Not supported', bg: 'bg-gray-100' },
+            { icon: <Check className="w-3 h-3 text-red-500" />, label: 'Supported', bg: 'bg-red-600/20 border-red-600/30' },
+            { icon: <Minus className="w-3 h-3 text-amber-600" />, label: 'Partial', bg: 'bg-amber-600/10 border-amber-600/20' },
+            { icon: <X className="w-3 h-3 text-zinc-700" />, label: 'Not supported', bg: 'border-white/[0.06]' },
           ].map((item) => (
             <div key={item.label} className="flex items-center gap-1.5">
-              <div className={`w-5 h-5 ${item.bg} rounded-full flex items-center justify-center`}>
-                {item.icon}
-              </div>
+              <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${item.bg}`}>{item.icon}</div>
               <span>{item.label}</span>
             </div>
           ))}

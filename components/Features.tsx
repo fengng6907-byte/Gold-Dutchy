@@ -7,106 +7,96 @@ const features = [
     icon: Zap,
     title: 'Instant Sharing',
     subtitle: 'Tap → Contact Saved',
-    color: 'from-brand-500 to-brand-600',
-    bg: 'bg-brand-50',
-    border: 'border-brand-100',
-    desc: 'One tap shares your full professional profile — name, title, email, social links, calendar — to any phone without an app.',
-    outcomes: ['Works on any iPhone or Android', "No app needed on receiver's phone", 'Customizable profile in minutes'],
+    desc: 'One tap delivers your full professional profile — name, title, email, social, calendar link — to any phone without an app.',
+    outcomes: ['Works on any iPhone or Android', "No app on receiver's phone", 'Customizable in minutes'],
     metric: { value: '< 3s', label: 'to share your full profile' },
+    accent: 'from-red-600 to-red-800',
+    glow: 'rgba(220,38,38,0.15)',
   },
   {
     icon: Target,
     title: 'Lead Capture',
     subtitle: 'Every Tap = A Lead',
-    color: 'from-emerald-500 to-teal-600',
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-100',
-    desc: 'TapFlow automatically logs who tapped your card — name, company, time, location — and routes them to your CRM instantly.',
-    outcomes: ['Auto-capture name + email', 'Instant CRM sync (Salesforce, HubSpot)', 'Slack / email notifications on tap'],
+    desc: 'TapFlow logs who tapped your card — name, company, time, location — and pushes them to your CRM the instant it happens.',
+    outcomes: ['Auto-capture name + email', 'CRM sync (Salesforce, HubSpot)', 'Slack + email tap alerts'],
     metric: { value: '100%', label: 'leads captured, zero lost' },
+    accent: 'from-red-600 to-rose-700',
+    glow: 'rgba(220,38,38,0.12)',
   },
   {
     icon: BarChart2,
     title: 'Analytics',
-    subtitle: 'Track, Measure, Optimize',
-    color: 'from-violet-500 to-purple-600',
-    bg: 'bg-violet-50',
-    border: 'border-violet-100',
-    desc: 'Know exactly how many people tapped, which events drove the most leads, and how those leads converted into revenue.',
-    outcomes: ['Tap heatmaps by time + location', 'Conversion funnel tracking', 'Revenue attribution per contact'],
+    subtitle: 'Track, Measure, Convert',
+    desc: 'Know exactly how many people tapped, which events drove leads, and how contacts are converting into revenue.',
+    outcomes: ['Tap heatmaps by time + location', 'Conversion funnel tracking', 'Revenue attribution'],
     metric: { value: '47%', label: 'avg lift in lead conversion' },
+    accent: 'from-zinc-600 to-zinc-800',
+    glow: 'rgba(255,255,255,0.04)',
   },
   {
     icon: Users,
     title: 'Team Management',
     subtitle: 'Scale Across Your Org',
-    color: 'from-amber-500 to-orange-600',
-    bg: 'bg-amber-50',
-    border: 'border-amber-100',
-    desc: 'Deploy TapFlow to your entire sales team. Manage cards, enforce branding, and track team-level performance from one dashboard.',
-    outcomes: ['Centralized card management', 'Role-based permissions', 'Team leaderboards + benchmarks'],
-    metric: { value: '10x', label: 'faster team onboarding' },
+    desc: 'Deploy TapFlow to your entire team. Manage cards, enforce brand consistency, and track performance from one dashboard.',
+    outcomes: ['Centralized card management', 'Role-based permissions', 'Team leaderboards'],
+    metric: { value: '10×', label: 'faster team onboarding' },
+    accent: 'from-zinc-600 to-zinc-800',
+    glow: 'rgba(255,255,255,0.04)',
   },
 ]
 
 export default function Features() {
   return (
-    <section id="features" className="py-28 bg-gray-50">
+    <section id="features" className="py-28 bg-[#080808]">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* Header */}
+
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-900 rounded-full text-xs font-semibold text-white mb-4">
-            Everything You Need
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-xs font-bold text-zinc-400 uppercase tracking-widest mb-5">
+            Core Capabilities
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Built Around Outcomes,<br />Not Features
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">
+            Built Around Results,
+            <br />Not Features
           </h2>
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-            Every capability in TapFlow maps directly to pipeline, revenue, or time saved. No bloat. Just results.
+          <p className="text-lg text-zinc-500 max-w-xl mx-auto">
+            Every capability maps directly to pipeline, revenue, or time saved.
           </p>
         </div>
 
-        {/* Feature grid */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {features.map((feature, i) => {
-            const Icon = feature.icon
+        <div className="grid md:grid-cols-2 gap-4">
+          {features.map((f) => {
+            const Icon = f.icon
             return (
               <div
-                key={feature.title}
-                className={`rounded-3xl border-2 ${feature.border} ${feature.bg} p-8 hover:shadow-lg transition-all duration-300 group`}
+                key={f.title}
+                className="rounded-3xl p-8 group hover:scale-[1.01] transition-all duration-300"
+                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.06)', boxShadow: `0 0 60px ${f.glow}` }}
               >
-                {/* Top */}
                 <div className="flex items-start justify-between mb-6">
                   <div>
-                    <div
-                      className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform`}
-                    >
-                      <Icon className="w-6 h-6 text-white" />
+                    <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${f.accent} flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform`}>
+                      <Icon className="w-5 h-5 text-white" />
                     </div>
-                    <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
-                      {feature.subtitle}
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900">{feature.title}</h3>
+                    <div className="text-xs font-bold text-zinc-600 uppercase tracking-widest mb-1">{f.subtitle}</div>
+                    <h3 className="text-xl font-bold text-white">{f.title}</h3>
                   </div>
-                  {/* Metric badge */}
-                  <div className="text-right flex-shrink-0">
-                    <div className={`text-3xl font-bold bg-gradient-to-br ${feature.color} bg-clip-text text-transparent`}>
-                      {feature.metric.value}
-                    </div>
-                    <div className="text-xs text-gray-500 max-w-[100px]">{feature.metric.label}</div>
+                  <div className="text-right flex-shrink-0 ml-4">
+                    <div className="text-3xl font-bold text-red-500">{f.metric.value}</div>
+                    <div className="text-xs text-zinc-600 max-w-[90px]">{f.metric.label}</div>
                   </div>
                 </div>
 
-                <p className="text-gray-600 leading-relaxed mb-6">{feature.desc}</p>
+                <p className="text-zinc-500 text-sm leading-relaxed mb-5">{f.desc}</p>
 
-                {/* Outcomes */}
                 <ul className="space-y-2">
-                  {feature.outcomes.map((outcome) => (
-                    <li key={outcome} className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 text-gray-800 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span className="text-sm font-medium text-gray-700">{outcome}</span>
+                  {f.outcomes.map((o) => (
+                    <li key={o} className="flex items-center gap-2.5">
+                      <div className="w-4 h-4 rounded-full bg-red-600/20 border border-red-600/30 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-2 h-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-xs text-zinc-400">{o}</span>
                     </li>
                   ))}
                 </ul>
@@ -114,6 +104,7 @@ export default function Features() {
             )
           })}
         </div>
+
       </div>
     </section>
   )

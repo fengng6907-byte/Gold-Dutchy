@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { DollarSign, TrendingUp, AlertTriangle, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
 export default function ROICalculator() {
   const [meetings, setMeetings] = useState(10)
@@ -9,168 +10,117 @@ export default function ROICalculator() {
   const [dealValue, setDealValue] = useState(5000)
 
   const results = useMemo(() => {
-    const weeksPerYear = 52
-    const totalMeetings = meetings * weeksPerYear
-    const currentLeadsCaptured = totalMeetings * 0.4 // assume 40% captured without TapFlow
-    const tapflowLeadsCaptured = totalMeetings * 0.95 // 95% captured with TapFlow
-
-    const currentConversions = currentLeadsCaptured * (conversion / 100)
-    const tapflowConversions = tapflowLeadsCaptured * (conversion / 100)
-
-    const currentRevenue = currentConversions * dealValue
-    const tapflowRevenue = tapflowConversions * dealValue
+    const totalMeetings = meetings * 52
+    const currentLeads = totalMeetings * 0.4
+    const tapflowLeads = totalMeetings * 0.95
+    const currentRevenue = currentLeads * (conversion / 100) * dealValue
+    const tapflowRevenue = tapflowLeads * (conversion / 100) * dealValue
     const missed = tapflowRevenue - currentRevenue
-
-    const monthlyMissed = missed / 12
-    const roi = Math.round((missed / 120) * 100) // vs $120/year Pro plan
-
     return {
       missed: Math.round(missed),
-      monthlyMissed: Math.round(monthlyMissed),
+      monthlyMissed: Math.round(missed / 12),
       tapflowRevenue: Math.round(tapflowRevenue),
-      roi,
-      additionalLeads: Math.round(tapflowLeadsCaptured - currentLeadsCaptured),
+      roi: Math.round((missed / 120) * 100),
+      additionalLeads: Math.round(tapflowLeads - currentLeads),
     }
   }, [meetings, conversion, dealValue])
 
-  const formatCurrency = (n: number) =>
-    n >= 1000000
-      ? `$${(n / 1000000).toFixed(1)}M`
-      : n >= 1000
-      ? `$${(n / 1000).toFixed(0)}K`
-      : `$${n}`
+  const fmt = (n: number) =>
+    n >= 1000000 ? `$${(n / 1000000).toFixed(1)}M` : n >= 1000 ? `$${(n / 1000).toFixed(0)}K` : `$${n}`
+
+  const SliderLabel = ({ label, val, color }: { label: string; val: string; color: string }) => (
+    <div className="flex justify-between items-center mb-3">
+      <label className="text-sm font-medium text-zinc-400">{label}</label>
+      <span className={`font-bold text-lg ${color}`}>{val}</span>
+    </div>
+  )
 
   return (
-    <section className="py-28 bg-gray-950">
+    <section className="py-20 bg-[#0a0a0a]">
       <div className="max-w-5xl mx-auto px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/20 border border-amber-500/30 rounded-full text-xs font-semibold text-amber-400 mb-4">
+        <div className="text-center mb-14">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-600/30 bg-amber-600/[0.06] text-xs font-bold text-amber-500 uppercase tracking-widest mb-5">
             ROI Calculator
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-            How Much Are You Leaving<br />on the Table?
+          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4 tracking-tight">
+            How Much Are You Leaving on the Table?
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            See the exact revenue you're missing by not tracking your contacts.
-          </p>
+          <p className="text-zinc-500 max-w-xl mx-auto">Drag the sliders to see your exact revenue miss.</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
+        <div className="grid lg:grid-cols-2 gap-6 items-start">
           {/* Inputs */}
-          <div className="bg-gray-900 rounded-3xl p-8 border border-gray-800 space-y-8">
-            <h3 className="text-white font-bold text-lg">Your Numbers</h3>
+          <div className="rounded-3xl p-8 space-y-8" style={{ background: '#111', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="text-sm font-bold text-white">Your Numbers</div>
 
-            {/* Meetings slider */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <label className="text-sm font-semibold text-gray-300">Meetings / week</label>
-                <span className="text-brand-400 font-bold text-lg">{meetings}</span>
+            {[
+              { label: 'Meetings / week', val: String(meetings), color: 'text-red-400', min: 1, max: 50, step: 1, value: meetings, onChange: setMeetings, accent: 'accent-red-600' },
+              { label: 'Close rate', val: `${conversion}%`, color: 'text-amber-400', min: 1, max: 50, step: 1, value: conversion, onChange: setConversion, accent: 'accent-amber-500' },
+            ].map((s) => (
+              <div key={s.label}>
+                <SliderLabel label={s.label} val={s.val} color={s.color} />
+                <input type="range" min={s.min} max={s.max} step={s.step} value={s.value}
+                  onChange={(e) => s.onChange(Number(e.target.value))}
+                  className={`w-full h-1.5 rounded-full appearance-none cursor-pointer ${s.accent}`}
+                  style={{ background: 'rgba(255,255,255,0.08)' }} />
+                <div className="flex justify-between text-xs text-zinc-700 mt-1">
+                  <span>{s.min}{s.label.includes('%') ? '' : ''}</span><span>{s.max}{s.label.includes('rate') ? '%' : ''}</span>
+                </div>
               </div>
-              <input
-                type="range"
-                min={1}
-                max={50}
-                value={meetings}
-                onChange={(e) => setMeetings(Number(e.target.value))}
-                className="w-full h-2 bg-gray-700 rounded-full appearance-none cursor-pointer accent-brand-500"
-              />
-              <div className="flex justify-between text-xs text-gray-600 mt-1">
-                <span>1</span><span>50</span>
-              </div>
-            </div>
+            ))}
 
-            {/* Conversion slider */}
             <div>
-              <div className="flex justify-between items-center mb-3">
-                <label className="text-sm font-semibold text-gray-300">Close rate</label>
-                <span className="text-violet-400 font-bold text-lg">{conversion}%</span>
-              </div>
-              <input
-                type="range"
-                min={1}
-                max={50}
-                value={conversion}
-                onChange={(e) => setConversion(Number(e.target.value))}
-                className="w-full h-2 bg-gray-700 rounded-full appearance-none cursor-pointer accent-violet-500"
-              />
-              <div className="flex justify-between text-xs text-gray-600 mt-1">
-                <span>1%</span><span>50%</span>
-              </div>
-            </div>
-
-            {/* Deal value */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <label className="text-sm font-semibold text-gray-300">Avg deal value</label>
-                <span className="text-emerald-400 font-bold text-lg">{formatCurrency(dealValue)}</span>
-              </div>
-              <input
-                type="range"
-                min={500}
-                max={100000}
-                step={500}
-                value={dealValue}
+              <SliderLabel label="Avg deal value" val={fmt(dealValue)} color="text-emerald-400" />
+              <input type="range" min={500} max={100000} step={500} value={dealValue}
                 onChange={(e) => setDealValue(Number(e.target.value))}
-                className="w-full h-2 bg-gray-700 rounded-full appearance-none cursor-pointer accent-emerald-500"
-              />
-              <div className="flex justify-between text-xs text-gray-600 mt-1">
-                <span>$500</span><span>$100K</span>
-              </div>
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-emerald-500"
+                style={{ background: 'rgba(255,255,255,0.08)' }} />
+              <div className="flex justify-between text-xs text-zinc-700 mt-1"><span>$500</span><span>$100K</span></div>
             </div>
           </div>
 
           {/* Results */}
-          <div className="space-y-4">
-            {/* Big miss */}
-            <div className="bg-red-950/60 border border-red-800/50 rounded-3xl p-8">
+          <div className="space-y-3">
+            <div className="rounded-3xl p-7" style={{ background: 'rgba(127,29,29,0.2)', border: '1px solid rgba(220,38,38,0.25)' }}>
               <div className="flex items-center gap-2 mb-3">
-                <AlertTriangle className="w-5 h-5 text-red-400" />
-                <span className="text-red-400 font-semibold text-sm">Revenue You're Missing / Year</span>
+                <AlertTriangle className="w-4 h-4 text-red-400" />
+                <span className="text-red-400 font-semibold text-sm">Revenue Missing / Year</span>
               </div>
-              <div className="text-5xl font-bold text-white mb-2">
-                {formatCurrency(results.missed)}
-              </div>
-              <div className="text-red-300 text-sm">
-                That's {formatCurrency(results.monthlyMissed)}/month in uncaptured leads
-              </div>
+              <div className="text-5xl font-bold text-white mb-1">{fmt(results.missed)}</div>
+              <div className="text-red-400/60 text-sm">{fmt(results.monthlyMissed)}/month in uncaptured leads</div>
             </div>
 
-            {/* With TapFlow */}
-            <div className="bg-emerald-950/60 border border-emerald-800/50 rounded-3xl p-6">
+            <div className="rounded-3xl p-5" style={{ background: 'rgba(5,46,22,0.3)', border: '1px solid rgba(21,128,61,0.25)' }}>
               <div className="flex items-center gap-2 mb-3">
-                <TrendingUp className="w-5 h-5 text-emerald-400" />
+                <TrendingUp className="w-4 h-4 text-emerald-400" />
                 <span className="text-emerald-400 font-semibold text-sm">With TapFlow</span>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <div className="text-2xl font-bold text-white">{formatCurrency(results.tapflowRevenue)}</div>
-                  <div className="text-emerald-300 text-xs">Potential yearly revenue</div>
+                  <div className="text-2xl font-bold text-white">{fmt(results.tapflowRevenue)}</div>
+                  <div className="text-emerald-400/60 text-xs">Potential yearly revenue</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-white">+{results.additionalLeads}</div>
-                  <div className="text-emerald-300 text-xs">Additional leads/year</div>
+                  <div className="text-emerald-400/60 text-xs">Additional leads/year</div>
                 </div>
               </div>
             </div>
 
-            {/* ROI */}
-            <div className="bg-brand-900/50 border border-brand-700/50 rounded-3xl p-6">
+            <div className="rounded-3xl p-5" style={{ background: 'rgba(79,70,229,0.1)', border: '1px solid rgba(79,70,229,0.2)' }}>
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign className="w-5 h-5 text-brand-400" />
-                <span className="text-brand-400 font-semibold text-sm">Your ROI on TapFlow Pro ($10/mo)</span>
+                <DollarSign className="w-4 h-4 text-indigo-400" />
+                <span className="text-indigo-400 font-semibold text-sm">ROI on TapFlow Pro ($10/mo)</span>
               </div>
-              <div className="text-4xl font-bold text-white">{results.roi.toLocaleString()}x</div>
-              <div className="text-brand-300 text-sm mt-1">Return on your investment</div>
+              <div className="text-4xl font-bold text-white">{results.roi.toLocaleString()}×</div>
+              <div className="text-indigo-400/60 text-sm mt-1">Return on your investment</div>
             </div>
 
-            <a
-              href="#pricing"
-              className="flex items-center justify-center gap-2 w-full py-4 bg-white text-gray-900 font-bold rounded-2xl hover:bg-brand-50 transition-colors group"
-            >
+            <Link href="/contact"
+              className="flex items-center justify-center gap-2 w-full py-4 bg-red-600 text-white font-bold rounded-2xl hover:bg-red-500 transition-colors red-glow group">
               Stop Leaving Money Behind
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </a>
+            </Link>
           </div>
         </div>
       </div>
