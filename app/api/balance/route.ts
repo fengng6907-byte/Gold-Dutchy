@@ -1,50 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { MOCK_EXPENSES, MOCK_GROUPS, MOCK_USERS } from '@/lib/mock-data'
-import { calculateDashboardStats, simplifyDebts } from '@/lib/balance'
+import { NextRequest } from 'next/server'
+import { ok, err, serverErr, requireAuth } from '@/lib/utils/api'
+import { getDashboardBalance, simplifyDebts, getUserBalance } from '@/lib/services/balance'
+import { getGroupExpenses } from '@/lib/services/expenses'
+import { getGroup } from '@/lib/services/groups'
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const userId = searchParams.get('userId') ?? 'user-1'
-  const groupId = searchParams.get('groupId')
+  const { user, supabase, unauthorized } = await requireAuth()
+  if (unauthorized || !user) return err('Unauthorized', 401)
 
-  if (groupId) {
-    // Group-specific balances
-    const group = MOCK_GROUPS.find(g => g.id === groupId)
-    if (!group) {
-      return NextResponse.json({ error: 'Group not found' }, { status: 404 })
+  try {
+    const { searchParams } = new URL(req.url)
+    const groupId = searchParams.get('groupId')
+
+    if (groupId) {
+      const [group, expenses] = await Promise.all([
+        getGroup(supabase, groupId),
+        getGroupExpenses(supabase, groupId, 200),
+      ])
+
+      if (!group) return err('Group not found', 404)
+
+      const members = group.group_members.map(gm => gm.profiles)
+      const debts   = simplifyDebts(expenses as any, members as any)
+      const myBalance = getUserBalance(expenses as any, user.id, members as any)
+
+      return ok({ debts, myBalance, memberCount: members.length })
     }
 
-    const groupExpenses = MOCK_EXPENSES.filter(e => e.groupId === groupId)
-    const groupUsers = group.members.map(m => m.user)
-    const simplifiedDebts = simplifyDebts(groupExpenses, groupUsers)
-
-    return NextResponse.json({
-      data: {
-        groupId,
-        simplifiedDebts,
-        totalExpenses: groupExpenses.reduce((s, e) => s + e.amount, 0),
-        expenseCount: groupExpenses.length,
-      }
-    })
+    // Dashboard-level balance
+    const balance = await getDashboardBalance(supabase, user.id)
+    return ok(balance)
+  } catch (e) {
+    return serverErr(e)
   }
-
-  // Dashboard balances
-  const userExpenses = MOCK_EXPENSES.filter(e =>
-    e.payerId === userId || e.shares.some(s => s.userId === userId)
-  )
-
-  const stats = calculateDashboardStats(userExpenses, userId)
-  const allUsers = MOCK_USERS
-  const allDebts = simplifyDebts(userExpenses, allUsers)
-  const myDebts = allDebts.filter(d => d.fromUserId === userId || d.toUserId === userId)
-
-  return NextResponse.json({
-    data: {
-      userId,
-      ...stats,
-      activeGroups: MOCK_GROUPS.filter(g => g.members.some(m => m.userId === userId)).length,
-      simplifiedDebts: myDebts,
-      expenseCount: userExpenses.length,
-    }
-  })
 }

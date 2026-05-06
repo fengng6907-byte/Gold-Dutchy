@@ -1,50 +1,43 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { MOCK_GROUPS } from '@/lib/mock-data'
+import { NextRequest } from 'next/server'
+import { ok, err, serverErr, requireAuth, validationErr } from '@/lib/utils/api'
+import { getUserGroups, createGroup, addGroupMember } from '@/lib/services/groups'
+import { createGroupSchema } from '@/lib/validators'
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const userId = searchParams.get('userId')
-  const search = searchParams.get('search')?.toLowerCase()
+export async function GET() {
+  const { user, supabase, unauthorized } = await requireAuth()
+  if (unauthorized || !user) return err('Unauthorized', 401)
 
-  let groups = MOCK_GROUPS
-
-  if (userId) {
-    groups = groups.filter(g => g.members.some(m => m.userId === userId))
+  try {
+    const groups = await getUserGroups(supabase, user.id)
+    return ok(groups)
+  } catch (e) {
+    return serverErr(e)
   }
-
-  if (search) {
-    groups = groups.filter(g =>
-      g.name.toLowerCase().includes(search) ||
-      g.description?.toLowerCase().includes(search) ||
-      g.type.toLowerCase().includes(search)
-    )
-  }
-
-  return NextResponse.json({ data: groups, total: groups.length })
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const { name, description, emoji, type, color, currency, memberEmails } = body
+  const { user, supabase, unauthorized } = await requireAuth()
+  if (unauthorized || !user) return err('Unauthorized', 401)
 
-  if (!name) {
-    return NextResponse.json({ error: 'Group name is required' }, { status: 400 })
+  try {
+    const body = await req.json()
+    const parsed = createGroupSchema.safeParse(body)
+    if (!parsed.success) return validationErr(parsed.error)
+
+    const { memberEmails = [], ...groupData } = parsed.data
+    const group = await createGroup(supabase, user.id, groupData) as any
+
+    // Invite members by email
+    const inviteResults = await Promise.allSettled(
+      memberEmails.map(email => addGroupMember(supabase, group.id, email))
+    )
+
+    const failed = inviteResults
+      .filter(r => r.status === 'rejected')
+      .map((r, i) => ({ email: memberEmails[i], reason: (r as PromiseRejectedResult).reason?.message }))
+
+    return ok({ group, failedInvites: failed }, 201)
+  } catch (e) {
+    return serverErr(e)
   }
-
-  const newGroup = {
-    id: `group-${Date.now()}`,
-    name,
-    description: description ?? null,
-    emoji: emoji ?? '📁',
-    type: type ?? 'OTHER',
-    color: color ?? '#F5B800',
-    currency: currency ?? 'USD',
-    createdAt: new Date().toISOString(),
-    members: [],
-    expenses: [],
-    totalExpenses: 0,
-    yourBalance: 0,
-  }
-
-  return NextResponse.json({ data: newGroup, message: 'Group created successfully' }, { status: 201 })
 }
