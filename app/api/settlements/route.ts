@@ -1,86 +1,70 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { MOCK_SETTLEMENTS } from '@/lib/mock-data'
+import { NextRequest } from 'next/server'
+import { ok, err, serverErr, requireAuth, validationErr } from '@/lib/utils/api'
+import { getUserSettlements, createSettlement, completeSettlement, cancelSettlement } from '@/lib/services/settlements'
+import { createSettlementSchema } from '@/lib/validators'
+import { z } from 'zod'
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const userId = searchParams.get('userId')
-  const status = searchParams.get('status')
+  const { user, supabase, unauthorized } = await requireAuth()
+  if (unauthorized || !user) return err('Unauthorized', 401)
 
-  let settlements = MOCK_SETTLEMENTS
-
-  if (userId) {
-    settlements = settlements.filter(s =>
-      s.sender.id === userId || s.receiver.id === userId
-    )
+  try {
+    const settlements = await getUserSettlements(supabase, user.id)
+    return ok(settlements)
+  } catch (e) {
+    return serverErr(e)
   }
-
-  if (status) {
-    settlements = settlements.filter(s => s.status === status)
-  }
-
-  return NextResponse.json({ data: settlements, total: settlements.length })
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const { senderId, receiverId, amount, method, notes, groupId } = body
+  const { user, supabase, unauthorized } = await requireAuth()
+  if (unauthorized || !user) return err('Unauthorized', 401)
 
-  if (!senderId || !receiverId || !amount) {
-    return NextResponse.json(
-      { error: 'senderId, receiverId, and amount are required' },
-      { status: 400 }
-    )
+  try {
+    const body = await req.json()
+    const parsed = createSettlementSchema.safeParse(body)
+    if (!parsed.success) return validationErr(parsed.error)
+
+    if (parsed.data.receiverId === user.id) {
+      return err('Cannot settle with yourself', 400)
+    }
+
+    const settlement = await createSettlement(supabase, {
+      senderId:    user.id,
+      receiverId:  parsed.data.receiverId,
+      amount:      parsed.data.amount,
+      currency:    parsed.data.currency,
+      method:      parsed.data.method,
+      notes:       parsed.data.notes,
+      groupId:     parsed.data.groupId,
+    })
+
+    return ok(settlement, 201)
+  } catch (e) {
+    return serverErr(e)
   }
-
-  if (senderId === receiverId) {
-    return NextResponse.json(
-      { error: 'Sender and receiver must be different users' },
-      { status: 400 }
-    )
-  }
-
-  if (parseFloat(amount) <= 0) {
-    return NextResponse.json({ error: 'Amount must be positive' }, { status: 400 })
-  }
-
-  const newSettlement = {
-    id: `set-${Date.now()}`,
-    amount: parseFloat(amount),
-    currency: 'USD',
-    notes: notes ?? null,
-    method: method ?? 'CASH',
-    status: 'PENDING',
-    senderId,
-    receiverId,
-    groupId: groupId ?? null,
-    createdAt: new Date().toISOString(),
-    settledAt: null,
-  }
-
-  return NextResponse.json(
-    { data: newSettlement, message: 'Settlement request created' },
-    { status: 201 }
-  )
 }
 
+const patchSchema = z.object({
+  id:     z.string().uuid(),
+  action: z.enum(['complete', 'cancel']),
+})
+
 export async function PATCH(req: NextRequest) {
-  const body = await req.json()
-  const { id, status } = body
+  const { user, supabase, unauthorized } = await requireAuth()
+  if (unauthorized || !user) return err('Unauthorized', 401)
 
-  if (!id || !status) {
-    return NextResponse.json({ error: 'id and status are required' }, { status: 400 })
+  try {
+    const body = await req.json()
+    const parsed = patchSchema.safeParse(body)
+    if (!parsed.success) return validationErr(parsed.error)
+
+    const result = parsed.data.action === 'complete'
+      ? await completeSettlement(supabase, parsed.data.id, user.id)
+      : await cancelSettlement(supabase, parsed.data.id, user.id)
+
+    return ok(result)
+  } catch (e) {
+    return serverErr(e)
   }
-
-  const settlement = MOCK_SETTLEMENTS.find(s => s.id === id)
-  if (!settlement) {
-    return NextResponse.json({ error: 'Settlement not found' }, { status: 404 })
-  }
-
-  const updated = {
-    ...settlement,
-    status,
-    settledAt: status === 'COMPLETED' ? new Date().toISOString() : settlement.settledAt,
-  }
-
-  return NextResponse.json({ data: updated, message: `Settlement ${status.toLowerCase()}` })
 }
